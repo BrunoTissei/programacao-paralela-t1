@@ -6,9 +6,9 @@
 #include "util/io.h"
 
 int main(int argc, char **argv) {
+  int k = atoi(argv[3]);
   set_t *training_set = read_input_data(argv[1]);
   set_t *testing_set = read_input_data(argv[2]);
-  int k = atoi(argv[3]);
 
   knn_classifier_t *knn = create_knn_classifier(k);
   knn_fit(knn, training_set);
@@ -24,5 +24,6 @@ int main(int argc, char **argv) {
   }
 
   double accuracy = ((double) corr) / ((double) testing_set->size);
+  printf("Accuracy: %lf\n", accuracy);
   return 0;
 }

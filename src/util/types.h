@@ -6,4 +6,9 @@
 
 typedef unsigned short BOOL;
 
+typedef struct tuple_t {
+  double x;
+  int y;
+} tuple_t;
+
 #endif

@@ -42,6 +42,7 @@ node_t *build_tree(set_t *points, int k) {
 
 int *search(const point_t *point, int k) {
 
+  return 0;
 }
 
 void recursive_search(node_t *node, const point_t *point, priority_queue *pq) {
