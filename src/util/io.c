@@ -1,13 +1,16 @@
 #include "util/io.h"
 
+void print_usage() {
+  printf("Usage: knn <training_set> <testing_set> <k>\n");
+}
+
 set_t *read_input_data(char *filename) {
   int n, d;
-  set_t *set;
   FILE *f = fopen(filename, "r");
-
   fscanf(f, "%d %d", &n, &d);
 
-  set = create_set(n);
+  set_t *set = create_set(n);
+
   for (int i = 0; i < n; ++i) {
     set->data[i] = create_point(d, i);
 

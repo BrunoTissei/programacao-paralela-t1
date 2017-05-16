@@ -8,13 +8,13 @@
 #include <immintrin.h>
 
 typedef struct point_t {
+  int size;
   int mclass, id;
-  unsigned int size;
   double *value;
 } point_t;
 
 typedef struct set_t {
-  unsigned int size;
+  int size;
   point_t **data;
 } set_t;
 

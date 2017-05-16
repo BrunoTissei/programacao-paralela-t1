@@ -35,7 +35,6 @@ avl_node_t *insert_avl(avl_t *avl, avl_node_t *node, tuple_t key) {
   if (node == NULL) {
     avl_node_t *n;
 
-    //#pragma omp critical
     n = (avl_node_t *) malloc(sizeof(avl_node_t));
 
     n->key = key;
@@ -93,33 +92,60 @@ void get_y(avl_node_t *node, int *array, int *k) {
   get_y(node->right, array, k);
 }
 
-tuple_t remove_greatest(avl_t *avl) {
-  avl_node_t *node = avl->root;
-  avl_node_t *parent = NULL;
+int get_balance(avl_node_t *node) {
+  if (node == NULL)
+    return 0;
+  return height(node->left) - height(node->right);
+}
 
-  while (node->right != NULL) {
-    parent = node;
-    node = node->right; 
+avl_node_t *delete(avl_node_t *node) {
+  if (node == NULL) {
+    return NULL;
   }
 
-  tuple_t ret = node->key;
-
-  if (parent == NULL) {
-    //#pragma omp critical
-    //free(avl->root);
-
-    if (avl->root->left == NULL) {
-      avl->root = NULL;
-    } else {
-      avl->root = avl->root->left;
-    }
+  if (node->right != NULL) {
+    node->right = delete(node->right);
   } else {
-    //#pragma omp critical
-    //free(node);
-    parent->right = NULL;
+    avl_node_t *tmp = node->left;
+
+    if (tmp == NULL) {
+      tmp = node;
+      node = NULL;
+    } else {
+      *node = *tmp;
+    }
+
+    free(tmp);
   }
 
-  return ret;
+  if (node == NULL)
+    return NULL;
+
+  int balance = get_balance(node);
+  int left_h = height(node->left); 
+  int right_h = height(node->right); 
+
+  node->height = 1 + max(left_h, right_h);
+
+  if (balance > 1 && get_balance(node->left) >= 0) {
+    return rotate_right(node);
+  } else if (balance > 1 && get_balance(node->left) < 0) {
+    node->left = rotate_left(node->left);
+
+    return rotate_right(node);
+  } else if (balance < -1 && get_balance(node->right) <= 0) {
+    return rotate_left(node);
+  } else if (balance < -1 && get_balance(node->right) > 0) {
+    node->right = rotate_right(node->right);
+
+    return rotate_left(node);
+  }
+
+  return node;
+}
+
+void remove_greatest(avl_t *avl) {
+  avl->root = delete(avl->root);
 }
 
 tuple_t get_smallest(avl_t *avl) {

@@ -6,12 +6,14 @@
 
 typedef unsigned short BOOL;
 
+#define max(a, b) ((a > b) ? a : b)
+#define min(a, b) ((a < b) ? a : b)
+
+typedef unsigned int uint;
+
 typedef struct tuple_t {
   double x;
   int y;
 } tuple_t;
-
-#define max(a, b) ((a > b) ? a : b)
-#define min(a, b) ((a < b) ? a : b)
 
 #endif

@@ -19,7 +19,7 @@ typedef struct avl_t {
 
 avl_node_t *insert_avl(avl_t *avl, avl_node_t *node, tuple_t key);
 
-tuple_t remove_greatest(avl_t *avl);
+void remove_greatest(avl_t *avl);
 
 void get_y(avl_node_t *node, int *array, int *k);
 

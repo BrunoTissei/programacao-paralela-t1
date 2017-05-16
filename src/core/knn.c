@@ -15,7 +15,7 @@ int predict(knn_classifier_t *knn_clf, const point_t *point) {
   int ans;
   int *result = (int *) malloc(sizeof(int) * knn_clf->k);
 
-  search(knn_clf->balltree, point, knn_clf->k, result);
+  search(knn_clf->balltree, point, result);
 
   ans = result[0];
   free(result);

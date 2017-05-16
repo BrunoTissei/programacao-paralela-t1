@@ -1,29 +1,19 @@
 #include "core/dataset.h"
 
 point_t *create_point(unsigned int size, int id) {
-  point_t *p;
-
-  //#pragma omp critical
-  p = (point_t *) malloc(sizeof(point_t));
+  point_t *p = (point_t *) malloc(sizeof(point_t));
 
   p->id = id;
   p->size = size;
-
-  //#pragma omp critical
   p->value = (double *) malloc(size * sizeof(double));
 
   return p;
 }
 
 set_t *create_set(unsigned int size) {
-  set_t *s;
-
-  //#pragma omp critical
-  s = (set_t *) malloc(sizeof(set_t));
+  set_t *s = (set_t *) malloc(sizeof(set_t));
 
   s->size = size;
-
-  //#pragma omp critical
   s->data = (point_t **) malloc(size * sizeof(point_t *));
 
   return s;
