@@ -9,7 +9,7 @@ set_t *read_input_data(char *filename) {
 
   set = create_set(n);
   for (int i = 0; i < n; ++i) {
-    set->data[i] = create_point(d);
+    set->data[i] = create_point(d, i);
 
     for (int j = 0; j < d; ++j) {
       fscanf(f, "%lf", &(set->data[i]->value[j]));

@@ -5,9 +5,10 @@
 #include <stdlib.h>
 #include <math.h>
 #include <stdio.h>
+#include <immintrin.h>
 
 typedef struct point_t {
-  int mclass;
+  int mclass, id;
   unsigned int size;
   double *value;
 } point_t;
@@ -18,10 +19,10 @@ typedef struct set_t {
 } set_t;
 
 
+point_t *create_point(unsigned int size, int id);
+
 set_t *create_set(unsigned int size);
 
-point_t *create_point(unsigned int size);
-
-double distance(point_t *a, point_t *b);
+double distance(const point_t *a, const point_t *b);
 
 #endif

@@ -14,4 +14,6 @@ knn_classifier_t *create_knn_classifier(int k);
 
 void knn_fit(knn_classifier_t *knn_clf, set_t *tr_set);
 
+int predict(knn_classifier_t *knn_clf, const point_t *point);
+
 #endif

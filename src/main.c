@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <omp.h>
 
 #include "core/dataset.h"
 #include "core/knn.h"
@@ -14,10 +15,12 @@ int main(int argc, char **argv) {
   knn_fit(knn, training_set);
 
   int corr = 0;
-  for (int i = 0; i < testing_set->size; ++i) {
-    //int pred = predict(knn, testing_set.data[i]);
-    int pred = 1;
 
+  #pragma omp parallel for reduction (+:corr) shared(knn, testing_set)
+  for (int i = 0; i < testing_set->size; ++i) {
+    int pred = predict(knn, testing_set->data[i]);
+
+    //printf("%d\n", i);
     if (pred == testing_set->data[i]->mclass) {
       corr++;
     }

@@ -5,21 +5,26 @@ balltree_t *create_tree(set_t *dataset, int k) {
 
   balltree->dataset = dataset;
   balltree->k = k;
-  balltree->root = build_tree(dataset, k);
+
+
+  #pragma omp parallel
+  {
+    #pragma omp single
+    balltree->root = build_tree(dataset, k);
+  }
 
   return balltree;
 }
 
 node_t *build_tree(set_t *points, int k) {
-  node_t *node = (node_t *) malloc(sizeof(node_t));
+  node_t *node;
+
+  //#pragma omp critical
+  node = (node_t *) malloc(sizeof(node_t));
   node->center = calc_center(points);
   
   if (points->size <= k) {
     node->points = points;
-    /*node->points = create_set(points->size);
-    for (int i = 0; i < points->size; ++i) {
-      node->points->data[i] = points->data[i]; 
-    }*/
 
     node->leaf = TRUE;
     node->left = NULL;
@@ -33,20 +38,77 @@ node_t *build_tree(set_t *points, int k) {
     partition(points, &left_part, &right_part, left_idx);
 
     node->leaf = FALSE;
+
+    #pragma omp task
     node->left = build_tree(left_part, k);
+    #pragma omp task
     node->right = build_tree(right_part, k);
+
+    #pragma omp taskwait
   }
 
   return node;
 }
 
-int *search(const point_t *point, int k) {
+int *search(balltree_t *bt, const point_t *point, int k) {
+  priority_queue_t pq;
+  pq.size = 0;
+  pq.tree.root = NULL;
+  recursive_search(bt, bt->root, point, &pq);
+  int *result;
+  
+  //#pragma omp critical
+  result = (int *) malloc(sizeof(int) * pq.size);
 
-  return 0;
+  get_elements(&pq, result);
+  for (int i = 0; i < pq.size; ++i) {
+    result[i] = bt->dataset->data[result[i]]->mclass;
+  }
+
+  return result;
 }
 
-void recursive_search(node_t *node, const point_t *point, priority_queue *pq) {
+void recursive_search(balltree_t *bt, node_t *node, const point_t *point, priority_queue_t *pq) {
+  tuple_t top = get_first(pq);
 
+  if (node->leaf) {
+    for (int i = 0; i < node->points->size; ++i) {
+      double dist = distance(point, node->points->data[i]);
+    
+      if (pq->size == 0 || dist < distance(point, bt->dataset->data[top.y])) {
+        tuple_t entry = {
+          .x = dist,
+          .y = node->points->data[i]->id
+        };
+
+        insert(pq, entry);
+        if (pq->size > bt->k) {
+          remove_last(pq); 
+        }
+      }
+    }
+  } else {
+    double dist_left = distance(point, node->left->center);
+    double dist_right = distance(point, node->right->center);
+
+    if (dist_left <= dist_right) {
+      if (!pq->size || dist_left <= top.x + node->left->radius) {
+        recursive_search(bt, node->left, point, pq);
+      }
+
+      if (!pq->size || (dist_right <= top.x + node->right->radius)) {
+        recursive_search(bt, node->right, point, pq);
+      }
+    } else {
+      if (!pq->size || (dist_right <= top.x + node->right->radius)) {
+        recursive_search(bt, node->right, point, pq);
+      }
+
+      if (!pq->size || dist_left <= top.x + node->left->radius) {
+        recursive_search(bt, node->left, point, pq);
+      }
+    }
+  }
 }
 
 void partition(set_t *points, set_t **left, set_t **right, int left_ind) {
@@ -67,9 +129,14 @@ void partition(set_t *points, set_t **left, set_t **right, int left_ind) {
   }
 
   rm_point = points->data[right_ind];
-  int *left_idxs = (int *) malloc(sizeof(int) * points->size);
-  int *right_idxs = (int *) malloc(sizeof(int) * points->size);
+
   int ri = 0, li = 0;
+  int *left_idxs, *right_idxs;
+
+  //#pragma omp critical
+  left_idxs = (int *) malloc(sizeof(int) * points->size);
+  //#pragma omp critical
+  right_idxs = (int *) malloc(sizeof(int) * points->size);
 
   for (int i = 0; i < points->size; ++i) {
     left_dist = distance(lm_point, points->data[i]);
@@ -93,13 +160,17 @@ void partition(set_t *points, set_t **left, set_t **right, int left_ind) {
     right[0]->data[i] = points->data[right_idxs[i]];
   }
 
+  //#pragma omp critical
   free(left_idxs);
+  //#pragma omp critical
   free(right_idxs);
 }
 
 point_t *calc_center(set_t *points) {
   int n_dim = points->data[0]->size;
-  point_t *center = create_point(n_dim);
+  point_t *center;
+
+  center = create_point(n_dim, -1);
 
   for (int i = 0; i < points->size; ++i) {
     for (int j = 0; j < n_dim; ++j) {

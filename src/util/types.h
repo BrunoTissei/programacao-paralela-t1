@@ -11,4 +11,7 @@ typedef struct tuple_t {
   int y;
 } tuple_t;
 
+#define max(a, b) ((a > b) ? a : b)
+#define min(a, b) ((a < b) ? a : b)
+
 #endif

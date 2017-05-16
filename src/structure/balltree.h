@@ -1,10 +1,13 @@
 #ifndef _BALL_TREE_H
 #define _BALL_TREE_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <omp.h>
+
 #include "core/dataset.h"
 #include "util/types.h"
 #include "structure/priority_queue.h"
-#include <stdio.h>
 
 typedef struct node_t {
   set_t *points;
@@ -26,9 +29,9 @@ balltree_t *create_tree(set_t *dataset, int k);
 
 node_t *build_tree(set_t *points, int k);
 
-int *search(const point_t *point, int k);
+int *search(balltree_t *bt, const point_t *point, int k);
 
-void recursive_search(node_t *node, const point_t *point, priority_queue *pq);
+void recursive_search(balltree_t *bt, node_t *node, const point_t *point, priority_queue_t *pq);
 
 void partition(set_t *points, set_t **left, set_t **right, int left_ind);
 
