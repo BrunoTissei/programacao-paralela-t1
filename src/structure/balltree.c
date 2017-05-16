@@ -62,10 +62,8 @@ int *search(balltree_t *bt, const point_t *point, int k, int *result) {
   
   get_elements(&pq, result);
   for (int i = 0; i < pq.size; ++i) {
-    printf("%d\n", result[i]);
     result[i] = bt->dataset->data[result[i]]->mclass;
   }
-  printf("\n");
 
   return result;
 }
