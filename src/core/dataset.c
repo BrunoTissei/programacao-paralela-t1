@@ -1,6 +1,6 @@
 #include "core/dataset.h"
 
-point_t *create_point(unsigned int size, int id) {
+point_t *create_point(uint size, int id) {
   point_t *p = (point_t *) calloc(1, sizeof(point_t));
 
   p->id = id;
@@ -10,7 +10,7 @@ point_t *create_point(unsigned int size, int id) {
   return p;
 }
 
-set_t *create_set(unsigned int size) {
+set_t *create_set(uint size) {
   set_t *s = (set_t *) calloc(1, sizeof(set_t));
 
   s->size = size;
@@ -19,8 +19,10 @@ set_t *create_set(unsigned int size) {
   return s;
 }
 
-double distance(const point_t *a, const point_t *b) {
-  int i = 0, n = a->size - (a->size % 4);
+inline double distance(const point_t *a, const point_t *b) {
+  int i = 0; 
+  int n = a->size - (a->size % 4);
+
   double dist = 0.0;
 
   __m256d ma, mb, msub, mans;

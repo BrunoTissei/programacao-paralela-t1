@@ -56,7 +56,7 @@ int *search(balltree_t *bt, const point_t *point, int *result) {
 
   recursive_search(bt, bt->root, point, &pq);
   
-  get_elements(&pq, result);
+  pq_to_array(&pq, result);
   for (int i = 0; i < pq.size; ++i) {
     result[i] = bt->dataset->data[result[i]]->mclass;
   }
@@ -65,7 +65,7 @@ int *search(balltree_t *bt, const point_t *point, int *result) {
 }
 
 void recursive_search(balltree_t *bt, node_t *node, const point_t *point, priority_queue_t *pq) {
-  tuple_t top = get_first(pq);
+  tuple_t top = pq_first(pq);
 
   if (node->leaf) {
     for (int i = 0; i < node->points->size; ++i) {
@@ -77,9 +77,9 @@ void recursive_search(balltree_t *bt, node_t *node, const point_t *point, priori
           .y = node->points->data[i]->id
         };
 
-        insert(pq, entry);
+        pq_insert(pq, entry);
         if (pq->size > bt->k) {
-          remove_last(pq); 
+          pq_remove_last(pq); 
         }
       }
     }

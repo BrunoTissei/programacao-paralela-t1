@@ -19,9 +19,9 @@ typedef struct set_t {
 } set_t;
 
 
-point_t *create_point(unsigned int size, int id);
+point_t *create_point(uint size, int id);
 
-set_t *create_set(unsigned int size);
+set_t *create_set(uint size);
 
 double distance(const point_t *a, const point_t *b);
 

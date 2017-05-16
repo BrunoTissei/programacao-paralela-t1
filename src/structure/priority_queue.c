@@ -1,11 +1,11 @@
 #include "structure/priority_queue.h"
 
-void insert(priority_queue_t *pq, tuple_t key) {
-  pq->tree.root = insert_avl(&(pq->tree), pq->tree.root, key);
+void pq_insert(priority_queue_t *pq, tuple_t key) {
+  pq->tree.root = avl_insert(&(pq->tree), pq->tree.root, key);
   pq->size++;
 }
 
-tuple_t get_first(priority_queue_t *pq) {
+tuple_t pq_first(priority_queue_t *pq) {
   if (pq->size == 0) {
     return (tuple_t) {
       .x = 0,
@@ -13,15 +13,15 @@ tuple_t get_first(priority_queue_t *pq) {
     };
   }
 
-  return get_smallest(&(pq->tree));
+  return avl_get_smallest(&(pq->tree));
 }
 
-void remove_last(priority_queue_t *pq) {
-  remove_greatest(&(pq->tree));
+void pq_remove_last(priority_queue_t *pq) {
+  avl_remove_greatest(&(pq->tree));
   pq->size--;
 }
 
-void get_elements(priority_queue_t *pq, int *array) {
+void pq_to_array(priority_queue_t *pq, int *array) {
   int k = 0;
-  get_y(pq->tree.root, array, &k);
+  avl_to_array(pq->tree.root, array, &k);
 }

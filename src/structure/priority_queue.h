@@ -11,12 +11,12 @@ typedef struct priority_queue_t {
 } priority_queue_t;
 
 
-void insert(priority_queue_t *pq, tuple_t key);
+void pq_insert(priority_queue_t *pq, tuple_t key);
 
-tuple_t get_first(priority_queue_t *pq);
+tuple_t pq_first(priority_queue_t *pq);
 
-void remove_last(priority_queue_t *pq);
+void pq_remove_last(priority_queue_t *pq);
 
-void get_elements(priority_queue_t *pq, int *array);
+void pq_to_array(priority_queue_t *pq, int *array);
 
 #endif

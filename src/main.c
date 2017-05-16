@@ -12,16 +12,15 @@ int main(int argc, char **argv) {
     print_usage();
   }
 
-  int correct, iteration;
+  int correct = 0, iteration = 0;
   int k = atoi(argv[3]);
 
   set_t *training_set = read_input_data(argv[1]);
   set_t *testing_set = read_input_data(argv[2]);
 
-  knn_classifier_t *knn = create_knn_classifier(k);
-  knn_fit(knn, training_set);
+  knn_classifier_t *knn = create_classifier(k);
+  fit(knn, training_set);
 
-  correct = iteration = 0;
 
   #pragma omp parallel for reduction (+:correct) shared(knn, testing_set)
   for (int i = 0; i < testing_set->size; ++i) {
@@ -37,6 +36,7 @@ int main(int argc, char **argv) {
   }
 
   printf("%d/%d\n", testing_set->size, testing_set->size);
+
 
   double accuracy = ((double) correct) / ((double) testing_set->size);
   printf("Accuracy: %lf\n", accuracy);
