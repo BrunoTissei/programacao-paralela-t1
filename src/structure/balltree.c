@@ -1,7 +1,8 @@
 #include "structure/balltree.h"
+#include <immintrin.h>
 
 balltree_t *create_tree(set_t *dataset, int k) {
-  balltree_t *balltree = (balltree_t *) malloc(sizeof(balltree_t));
+  balltree_t *balltree = (balltree_t *) calloc(1, sizeof(balltree_t));
 
   #pragma omp parallel
   {
@@ -17,8 +18,9 @@ balltree_t *create_tree(set_t *dataset, int k) {
 }
 
 node_t *build_tree(set_t *points, int k) {
-  node_t *node = (node_t *) malloc(sizeof(node_t));
-  node->center = calc_center(points);
+  node_t *node = (node_t *) calloc(1, sizeof(node_t));
+
+  calc_center(points, &(node->center));
   
   if (points->size <= k) {
     node->points = points;
@@ -33,7 +35,6 @@ node_t *build_tree(set_t *points, int k) {
 
     node->radius = calc_radius(node->center, points, &left_idx);
     partition(points, &left_part, &right_part, left_idx);
-    //printf("%d %d\n", left_part->size, right_part->size);
 
     node->leaf = FALSE;
 
@@ -126,10 +127,8 @@ void partition(set_t *points, set_t **left, set_t **right, int left_ind) {
   rm_point = points->data[right_ind];
 
   int ri = 0, li = 0;
-  int *left_idxs, *right_idxs;
-
-  left_idxs = (int *) malloc(sizeof(int) * points->size);
-  right_idxs = (int *) malloc(sizeof(int) * points->size);
+  int *left_idxs  = (int *) calloc(1, sizeof(int) * points->size);
+  int *right_idxs = (int *) calloc(1, sizeof(int) * points->size);
 
   for (int i = 0; i < points->size; ++i) {
     left_dist = distance(lm_point, points->data[i]);
@@ -157,30 +156,27 @@ void partition(set_t *points, set_t **left, set_t **right, int left_ind) {
   free(right_idxs);
 }
 
-point_t *calc_center(set_t *points) {
+void calc_center(set_t *points, point_t **center) {
   int n_dim = points->data[0]->size;
-  point_t *center;
-
-  center = create_point(n_dim, -1);
+  *center = create_point(n_dim, -1);
 
   for (int i = 0; i < points->size; ++i) {
     for (int j = 0; j < n_dim; ++j) {
-      center->value[j] += points->data[i]->value[j];
+      (*center)->value[j] += points->data[i]->value[j];
     }
   }
   
   double div = 1.0 / ((double) points->size);
   for (int i = 0; i < n_dim; ++i) {
-    center->value[i] *= div;
+    (*center)->value[i] *= div;
   }
-
-  return center;
 }
 
 double calc_radius(point_t *center, set_t *points, int *index) {
-  double dist = 0.0, radius = 0.0;
+  double dist = distance(center, points->data[0]);
+  double radius = dist;
 
-  for (int i = 0; i < points->size; ++i) {
+  for (int i = 1; i < points->size; ++i) {
     dist = distance(center, points->data[i]);
 
     if (radius < dist) {
