@@ -5,6 +5,7 @@
 #include "core/dataset.h"
 #include "core/knn.h"
 #include "util/io.h"
+#include "structure/priority_queue.h"
 
 int main(int argc, char **argv) {
   int k = atoi(argv[3]);
@@ -28,5 +29,25 @@ int main(int argc, char **argv) {
 
   double accuracy = ((double) corr) / ((double) testing_set->size);
   printf("Accuracy: %lf\n", accuracy);
+ /* 
+  priority_queue_t pq;
+  pq.size = 0;
+  pq.tree.root = NULL;
+
+  for (int i = 10; i >= 0; --i) {
+    tuple_t entry = {
+      .x = (double) i,
+      .y = i
+    };
+
+    insert(&pq, entry);
+  }
+
+  int *res = (int *) malloc(sizeof(int) * 100);
+  get_elements(&pq, res);
+  for (int i = 0; i < 10; ++i) {
+    printf("%d\n", res[i]);
+  }
+*/
   return 0;
 }

@@ -12,6 +12,13 @@ void knn_fit(knn_classifier_t *knn_clf, set_t *tr_set) {
 }
 
 int predict(knn_classifier_t *knn_clf, const point_t *point) {
-  int *result = search(knn_clf->balltree, point, knn_clf->k);
-  return result[0];
+  int ans;
+  int *result = (int *) malloc(sizeof(int) * knn_clf->k);
+
+  search(knn_clf->balltree, point, knn_clf->k, result);
+
+  ans = result[0];
+  free(result);
+
+  return ans; 
 }

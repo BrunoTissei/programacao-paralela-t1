@@ -31,6 +31,7 @@ node_t *build_tree(set_t *points, int k) {
     node->right = NULL;
   } else {
     int left_idx = 0;
+
     set_t *left_part;
     set_t *right_part;
 
@@ -50,20 +51,21 @@ node_t *build_tree(set_t *points, int k) {
   return node;
 }
 
-int *search(balltree_t *bt, const point_t *point, int k) {
+int cnt = 0;
+int *search(balltree_t *bt, const point_t *point, int k, int *result) {
   priority_queue_t pq;
+
   pq.size = 0;
   pq.tree.root = NULL;
-  recursive_search(bt, bt->root, point, &pq);
-  int *result;
-  
-  //#pragma omp critical
-  result = (int *) malloc(sizeof(int) * pq.size);
 
+  recursive_search(bt, bt->root, point, &pq);
+  
   get_elements(&pq, result);
   for (int i = 0; i < pq.size; ++i) {
+    printf("%d\n", result[i]);
     result[i] = bt->dataset->data[result[i]]->mclass;
   }
+  printf("\n");
 
   return result;
 }
@@ -187,7 +189,7 @@ point_t *calc_center(set_t *points) {
 }
 
 double calc_radius(point_t *center, set_t *points, int *index) {
-  double dist, radius = 0.0;
+  double dist = 0.0, radius = 0.0;
 
   for (int i = 0; i < points->size; ++i) {
     dist = distance(center, points->data[i]);

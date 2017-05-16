@@ -88,10 +88,8 @@ void get_y(avl_node_t *node, int *array, int *k) {
     return;
   }
 
-  array[*k] = node->key.y;
-  *k += 1;
-
   get_y(node->left, array, k);
+  array[(*k)++] = node->key.y;
   get_y(node->right, array, k);
 }
 
@@ -108,7 +106,7 @@ tuple_t remove_greatest(avl_t *avl) {
 
   if (parent == NULL) {
     //#pragma omp critical
-    free(avl->root);
+    //free(avl->root);
 
     if (avl->root->left == NULL) {
       avl->root = NULL;
@@ -117,7 +115,7 @@ tuple_t remove_greatest(avl_t *avl) {
     }
   } else {
     //#pragma omp critical
-    free(node);
+    //free(node);
     parent->right = NULL;
   }
 
