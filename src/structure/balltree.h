@@ -25,18 +25,8 @@ typedef struct balltree_t {
 } balltree_t;
 
 
-balltree_t *create_tree(set_t *dataset, int k);
+balltree_t *create_balltree(set_t *dataset, int k);
 
-node_t *build_tree(set_t *points, int k);
-
-int *search(balltree_t *bt, const point_t *point, int *result);
-
-void recursive_search(balltree_t *bt, node_t *node, const point_t *point, priority_queue_t *pq);
-
-void partition(set_t *points, set_t **left, set_t **right, int left_ind);
-
-void calc_center(set_t *points, point_t **center);
-
-double calc_radius(point_t *center, set_t *points, int *index);
+void search(balltree_t *bt, const point_t *point, int *result);
 
 #endif

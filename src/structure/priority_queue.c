@@ -1,5 +1,10 @@
 #include "structure/priority_queue.h"
 
+void pq_init(priority_queue_t *pq) {
+  pq->size = 0;
+  pq->tree.root = NULL;
+}
+
 void pq_insert(priority_queue_t *pq, tuple_t key) {
   pq->tree.root = avl_insert(&(pq->tree), pq->tree.root, key);
   pq->size++;

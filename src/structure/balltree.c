@@ -1,7 +1,19 @@
 #include "structure/balltree.h"
 #include <immintrin.h>
 
-balltree_t *create_tree(set_t *dataset, int k) {
+node_t *build_tree(set_t *points, int k);
+
+void recursive_search(balltree_t *bt, node_t *node, 
+    const point_t *point, priority_queue_t *pq);
+
+void partition(set_t *points, set_t **left, set_t **right, int left_ind);
+
+void calc_center(set_t *points, point_t **center);
+
+double calc_radius(point_t *center, set_t *points, int *index);
+
+
+balltree_t *create_balltree(set_t *dataset, int k) {
   balltree_t *balltree = (balltree_t *) calloc(1, sizeof(balltree_t));
 
   #pragma omp parallel
@@ -49,22 +61,22 @@ node_t *build_tree(set_t *points, int k) {
   return node;
 }
 
-int *search(balltree_t *bt, const point_t *point, int *result) {
+void search(balltree_t *bt, const point_t *point, int *result) {
   priority_queue_t pq;
-  pq.size = 0;
-  pq.tree.root = NULL;
+  pq_init(&pq);
 
   recursive_search(bt, bt->root, point, &pq);
   
   pq_to_array(&pq, result);
+
   for (int i = 0; i < pq.size; ++i) {
     result[i] = bt->dataset->data[result[i]]->mclass;
   }
-
-  return result;
 }
 
-void recursive_search(balltree_t *bt, node_t *node, const point_t *point, priority_queue_t *pq) {
+void recursive_search(balltree_t *bt, node_t *node, 
+    const point_t *point, priority_queue_t *pq) {
+
   tuple_t top = pq_first(pq);
 
   if (node->leaf) {

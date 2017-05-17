@@ -8,7 +8,7 @@ knn_classifier_t *create_classifier(int k) {
 }
 
 void fit(knn_classifier_t *knn_clf, set_t *tr_set) {
-  knn_clf->balltree = create_tree(tr_set, knn_clf->k);
+  knn_clf->balltree = create_balltree(tr_set, knn_clf->k);
 }
 
 int predict(knn_classifier_t *knn_clf, const point_t *point) {
