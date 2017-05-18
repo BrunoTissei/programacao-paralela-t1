@@ -29,6 +29,21 @@ balltree_t *create_balltree(set_t *dataset, int k) {
   return balltree;
 }
 
+void delete_nodes(node_t *n) {
+  if (n == NULL)
+    return;
+
+  delete_nodes(n->left);
+  delete_nodes(n->right);
+  free(n->center->value);
+  free(n->center);
+  free(n);
+}
+
+void delete_balltree(balltree_t *balltree) {
+  delete_nodes(balltree->root); 
+}
+
 node_t *build_tree(set_t *points, int k) {
   node_t *node = (node_t *) calloc(1, sizeof(node_t));
 
@@ -61,7 +76,7 @@ node_t *build_tree(set_t *points, int k) {
   return node;
 }
 
-void search(balltree_t *bt, const point_t *point, int *result) {
+int search(balltree_t *bt, const point_t *point, int *result) {
   priority_queue_t pq;
   pq_init(&pq);
 
@@ -72,6 +87,8 @@ void search(balltree_t *bt, const point_t *point, int *result) {
   for (int i = 0; i < pq.size; ++i) {
     result[i] = bt->dataset->data[result[i]]->mclass;
   }
+
+  return pq.size;
 }
 
 void recursive_search(balltree_t *bt, node_t *node, 
@@ -185,13 +202,14 @@ void calc_center(set_t *points, point_t **center) {
 }
 
 double calc_radius(point_t *center, set_t *points, int *index) {
+  *index = 0;
   double dist = distance(center, points->data[0]);
   double radius = dist;
 
   for (int i = 1; i < points->size; ++i) {
     dist = distance(center, points->data[i]);
 
-    if (radius < dist) {
+    if (dist > radius) {
       radius = dist;
       *index = i;
     }

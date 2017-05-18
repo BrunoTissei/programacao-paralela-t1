@@ -27,6 +27,10 @@ typedef struct balltree_t {
 
 balltree_t *create_balltree(set_t *dataset, int k);
 
-void search(balltree_t *bt, const point_t *point, int *result);
+int search(balltree_t *bt, const point_t *point, int *result);
+
+void delete_nodes(node_t *n);
+
+void delete_balltree(balltree_t *balltree);
 
 #endif

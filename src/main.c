@@ -35,6 +35,8 @@ int main(int argc, char **argv) {
     iteration++;
   }
 
+  delete_classifier(knn);
+
   printf("%d/%d\n", testing_set->size, testing_set->size);
 
 

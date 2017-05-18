@@ -12,6 +12,8 @@ typedef struct knn_classifier_t {
 
 knn_classifier_t *create_classifier(int k);
 
+void delete_classifier(knn_classifier_t *knn);
+
 void fit(knn_classifier_t *knn_clf, set_t *tr_set);
 
 int predict(knn_classifier_t *knn_clf, const point_t *point);
