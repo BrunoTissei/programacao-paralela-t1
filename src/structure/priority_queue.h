@@ -13,6 +13,8 @@ typedef struct priority_queue_t {
 
 void pq_init(priority_queue_t *pq);
 
+void pq_delete(priority_queue_t *pq);
+
 void pq_insert(priority_queue_t *pq, tuple_t key);
 
 tuple_t pq_first(priority_queue_t *pq);

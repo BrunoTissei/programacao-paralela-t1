@@ -19,6 +19,8 @@ typedef struct avl_t {
 } avl_t;
 
 
+void avl_delete(avl_node_t *node);
+
 avl_node_t *avl_insert(avl_t *avl, avl_node_t *node, tuple_t key);
 
 void avl_remove_greatest(avl_t *avl);

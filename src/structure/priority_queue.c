@@ -5,6 +5,10 @@ void pq_init(priority_queue_t *pq) {
   pq->tree.root = NULL;
 }
 
+void pq_delete(priority_queue_t *pq) {
+  avl_delete(pq->tree.root);
+}
+
 void pq_insert(priority_queue_t *pq, tuple_t key) {
   pq->tree.root = avl_insert(&(pq->tree), pq->tree.root, key);
   pq->size++;

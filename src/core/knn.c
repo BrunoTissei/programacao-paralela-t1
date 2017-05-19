@@ -9,21 +9,25 @@ knn_classifier_t *create_classifier(int k) {
 
 void delete_classifier(knn_classifier_t *knn) {
   delete_balltree(knn->balltree); 
+
+  free(knn->balltree);
+  free(knn);
 }
 
 void fit(knn_classifier_t *knn_clf, set_t *tr_set) {
   knn_clf->balltree = create_balltree(tr_set, knn_clf->k);
 }
 
-int predict(knn_classifier_t *knn_clf, const point_t *point) { int ans = 0, mx = -1;
+int predict(knn_classifier_t *knn_clf, const point_t *point) {
+  int ans = 0, mx = -1;
+
   int *result = (int *) malloc(sizeof(int) * knn_clf->k);
   int *count = (int *) calloc(1, sizeof(int) * 10);
 
   int found = search(knn_clf->balltree, point, result);
 
-  for (int i = 0; i < found; ++i) {
+  for (int i = 0; i < found; ++i)
     count[result[i]]++; 
-  }
 
   for (int i = 0; i < 10; ++i) {
     if (count[i] > mx) {
@@ -34,5 +38,6 @@ int predict(knn_classifier_t *knn_clf, const point_t *point) { int ans = 0, mx =
 
   free(result);
   free(count);
+
   return ans; 
 }

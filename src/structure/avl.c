@@ -8,6 +8,16 @@ static inline int get_balance(avl_node_t *node) {
   return (node == NULL) ? 0 : get_height(node->left) - get_height(node->right);
 }
 
+void avl_delete(avl_node_t *node) {
+  if (node == NULL)
+    return;
+
+  avl_delete(node->left);
+  avl_delete(node->right);
+
+  free(node);
+}
+
 avl_node_t *rotate_right(avl_node_t *node) {
   avl_node_t *aux1 = node->left;
   avl_node_t *aux2 = aux1->right;

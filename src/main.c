@@ -8,9 +8,8 @@
 #include "structure/priority_queue.h"
 
 int main(int argc, char **argv) {
-  if (argc < 4) {
+  if (argc < 4)
     print_usage();
-  }
 
   int correct = 0, iteration = 0;
   int k = atoi(argv[3]);
@@ -27,9 +26,8 @@ int main(int argc, char **argv) {
     int pred = predict(knn, testing_set->data[i]);
 
     printf("%d/%d\r", iteration, testing_set->size);
-    if (pred == testing_set->data[i]->mclass) {
+    if (pred == testing_set->data[i]->mclass)
       correct++;
-    }
 
     #pragma omp atomic
     iteration++;

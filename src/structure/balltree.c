@@ -24,6 +24,7 @@ void delete_nodes(node_t *n) {
   delete_nodes(n->left);
   delete_nodes(n->right);
 
+  free(n->points);
   free(n->center->value);
   free(n->center);
   free(n);
@@ -31,6 +32,14 @@ void delete_nodes(node_t *n) {
 
 void delete_balltree(balltree_t *balltree) {
   delete_nodes(balltree->root); 
+
+  for (int i = 0; i < balltree->dataset->size; ++i) {
+    free(balltree->dataset->data[i]->value);
+    free(balltree->dataset->data[i]);
+  }
+
+  free(balltree->dataset->data);
+  free(balltree->dataset);
 }
 
 node_t *build_tree(set_t *points, int k) {
@@ -73,10 +82,10 @@ int search(balltree_t *bt, const point_t *point, int *result) {
   
   pq_to_array(&pq, result);
 
-  for (int i = 0; i < pq.size; ++i) {
+  for (int i = 0; i < pq.size; ++i)
     result[i] = bt->dataset->data[result[i]]->mclass;
-  }
 
+  pq_delete(&pq);
   return pq.size;
 }
 
@@ -96,9 +105,8 @@ void recursive_search(balltree_t *bt, node_t *node, const point_t *point,
         };
 
         pq_insert(pq, entry);
-        if (pq->size > bt->k) {
+        if (pq->size > bt->k)
           pq_remove_last(pq); 
-        }
       }
     }
   } else {
@@ -143,6 +151,7 @@ void partition(set_t *points, set_t **left, set_t **right, int left_ind) {
   rm_point = points->data[right_ind];
 
   int ri = 0, li = 0;
+
   int *left_idxs  = (int *) calloc(1, sizeof(int) * points->size);
   int *right_idxs = (int *) calloc(1, sizeof(int) * points->size);
 
@@ -154,24 +163,21 @@ void partition(set_t *points, set_t **left, set_t **right, int left_ind) {
       left_dist = distance(lm_point, points->data[i]);
       right_dist = distance(rm_point, points->data[i]);
 
-      if (left_dist < right_dist) {
+      if (left_dist < right_dist)
         left_idxs[li++] = i;
-      } else {
+      else
         right_idxs[ri++] = i;
-      }
     }
   }
 
   *left = create_set(li);
   *right = create_set(ri);
 
-  for (int i = 0; i < li; ++i) {
+  for (int i = 0; i < li; ++i)
     (*left)->data[i] = points->data[left_idxs[i]];
-  }
 
-  for (int i = 0; i < ri; ++i) {
+  for (int i = 0; i < ri; ++i)
     (*right)->data[i] = points->data[right_idxs[i]];
-  }
 
   free(left_idxs);
   free(right_idxs);
@@ -181,17 +187,14 @@ void calc_center(set_t *points, point_t **center) {
   int n_dim = points->data[0]->size;
   *center = create_point(n_dim, -1);
 
-  for (int i = 0; i < points->size; ++i) {
-    for (int j = 0; j < n_dim; ++j) {
+  for (int i = 0; i < points->size; ++i)
+    for (int j = 0; j < n_dim; ++j)
       (*center)->value[j] += points->data[i]->value[j];
-    }
-  }
   
   double div = 1.0 / ((double) points->size);
 
-  for (int i = 0; i < n_dim; ++i) {
+  for (int i = 0; i < n_dim; ++i)
     (*center)->value[i] *= div;
-  }
 }
 
 double calc_radius(point_t *center, set_t *points, int *index) {
