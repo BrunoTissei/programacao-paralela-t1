@@ -33,4 +33,15 @@ void delete_nodes(node_t *n);
 
 void delete_balltree(balltree_t *balltree);
 
+node_t *build_tree(set_t *points, int k);
+
+void recursive_search(balltree_t *bt, node_t *node, const point_t *point, 
+    priority_queue_t *pq);
+
+void partition(set_t *points, set_t **left, set_t **right, int left_ind);
+
+void calc_center(set_t *points, point_t **center);
+
+double calc_radius(point_t *center, set_t *points, int *index);
+
 #endif

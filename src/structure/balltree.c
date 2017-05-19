@@ -1,18 +1,6 @@
 #include "structure/balltree.h"
 #include <immintrin.h>
 
-node_t *build_tree(set_t *points, int k);
-
-void recursive_search(balltree_t *bt, node_t *node, 
-    const point_t *point, priority_queue_t *pq);
-
-void partition(set_t *points, set_t **left, set_t **right, int left_ind);
-
-void calc_center(set_t *points, point_t **center);
-
-double calc_radius(point_t *center, set_t *points, int *index);
-
-
 balltree_t *create_balltree(set_t *dataset, int k) {
   balltree_t *balltree = (balltree_t *) calloc(1, sizeof(balltree_t));
 
@@ -35,6 +23,7 @@ void delete_nodes(node_t *n) {
 
   delete_nodes(n->left);
   delete_nodes(n->right);
+
   free(n->center->value);
   free(n->center);
   free(n);
@@ -91,8 +80,8 @@ int search(balltree_t *bt, const point_t *point, int *result) {
   return pq.size;
 }
 
-void recursive_search(balltree_t *bt, node_t *node, 
-    const point_t *point, priority_queue_t *pq) {
+void recursive_search(balltree_t *bt, node_t *node, const point_t *point, 
+    priority_queue_t *pq) {
 
   tuple_t top = pq_first(pq);
 
@@ -117,39 +106,37 @@ void recursive_search(balltree_t *bt, node_t *node,
     double dist_right = distance(point, node->right->center);
 
     if (dist_left <= dist_right) {
-      if (!pq->size || dist_left <= top.x + node->left->radius) {
+      if (pq->size == 0 || (dist_left <= top.x + node->left->radius))
         recursive_search(bt, node->left, point, pq);
-      }
 
-      if (!pq->size || (dist_right <= top.x + node->right->radius)) {
+      if (pq->size == 0 || (dist_right <= top.x + node->right->radius))
         recursive_search(bt, node->right, point, pq);
-      }
     } else {
-      if (!pq->size || (dist_right <= top.x + node->right->radius)) {
+      if (pq->size == 0 || (dist_right <= top.x + node->right->radius))
         recursive_search(bt, node->right, point, pq);
-      }
 
-      if (!pq->size || dist_left <= top.x + node->left->radius) {
+      if (pq->size == 0 || (dist_left <= top.x + node->left->radius))
         recursive_search(bt, node->left, point, pq);
-      }
     }
   }
 }
 
 void partition(set_t *points, set_t **left, set_t **right, int left_ind) {
   int right_ind = 0;
-  double dist, grt_dist = 0.0;
+  double dist, grt_dist = -1.0;
   double left_dist, right_dist;
 
   point_t *rm_point;
   point_t *lm_point = points->data[left_ind];
 
   for (int i = 0; i < points->size; ++i) {
-    dist = distance(lm_point, points->data[i]);
+    if (i != left_ind) {
+      dist = distance(lm_point, points->data[i]);
 
-    if (dist > grt_dist) {
-      grt_dist = dist;
-      right_ind = i;
+      if (dist > grt_dist) {
+        grt_dist = dist;
+        right_ind = i;
+      }
     }
   }
 
@@ -159,14 +146,19 @@ void partition(set_t *points, set_t **left, set_t **right, int left_ind) {
   int *left_idxs  = (int *) calloc(1, sizeof(int) * points->size);
   int *right_idxs = (int *) calloc(1, sizeof(int) * points->size);
 
-  for (int i = 0; i < points->size; ++i) {
-    left_dist = distance(lm_point, points->data[i]);
-    right_dist = distance(rm_point, points->data[i]);
+  left_idxs[li++] = left_ind;
+  right_idxs[ri++] = right_ind;
 
-    if (left_dist < right_dist) {
-      left_idxs[li++] = i;
-    } else {
-      right_idxs[ri++] = i;
+  for (int i = 0; i < points->size; ++i) {
+    if (i != left_ind && i != right_ind) {
+      left_dist = distance(lm_point, points->data[i]);
+      right_dist = distance(rm_point, points->data[i]);
+
+      if (left_dist < right_dist) {
+        left_idxs[li++] = i;
+      } else {
+        right_idxs[ri++] = i;
+      }
     }
   }
 
@@ -196,6 +188,7 @@ void calc_center(set_t *points, point_t **center) {
   }
   
   double div = 1.0 / ((double) points->size);
+
   for (int i = 0; i < n_dim; ++i) {
     (*center)->value[i] *= div;
   }
@@ -203,6 +196,7 @@ void calc_center(set_t *points, point_t **center) {
 
 double calc_radius(point_t *center, set_t *points, int *index) {
   *index = 0;
+
   double dist = distance(center, points->data[0]);
   double radius = dist;
 

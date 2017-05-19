@@ -127,8 +127,8 @@ void avl_remove_greatest(avl_t *avl) {
 tuple_t avl_get_smallest(avl_t *avl) {
   avl_node_t *node = avl->root;
 
-  while (node->left != NULL)
-    node = node->left;
+  while (node->right != NULL)
+    node = node->right;
 
   return node->key;
 } 
