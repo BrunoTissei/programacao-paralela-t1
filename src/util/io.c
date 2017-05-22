@@ -7,6 +7,10 @@ void print_usage() {
 set_t *read_input_data(char *filename) {
   int n, d;
   FILE *f = fopen(filename, "r");
+
+  if (f == NULL)
+    return NULL;
+
   fscanf(f, "%d %d", &n, &d);
 
   set_t *set = create_set(n);
