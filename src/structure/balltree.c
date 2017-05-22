@@ -1,5 +1,4 @@
 #include "structure/balltree.h"
-#include <immintrin.h>
 
 balltree_t *create_balltree(set_t *dataset, int k) {
   balltree_t *balltree = (balltree_t *) calloc(1, sizeof(balltree_t));

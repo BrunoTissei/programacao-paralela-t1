@@ -1,6 +1,6 @@
 #include "util/io.h"
 
-void print_usage() {
+void print_usage(void) {
   printf("Usage: knn <training_set> <testing_set> <k>\n");
 }
 
@@ -27,4 +27,11 @@ set_t *read_input_data(char *filename) {
   fclose(f);
 
   return set;
+}
+
+double timestamp(void) {
+  struct timeval tp;
+  gettimeofday(&tp, NULL);
+
+  return((double) (tp.tv_sec*1000.0 + tp.tv_usec/1000.0));
 }

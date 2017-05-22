@@ -28,8 +28,12 @@ int main(int argc, char **argv) {
   }
 
   knn_classifier_t *knn = create_classifier(k);
-  fit(knn, training_set);
 
+	double start = timestamp();
+  fit(knn, training_set);
+  double building_time = timestamp() - start;
+
+  start = timestamp();
   #pragma omp parallel for reduction (+:correct) shared(knn, testing_set)
   for (int i = 0; i < testing_set->size; ++i) {
     int pred = predict(knn, testing_set->data[i]);
@@ -41,13 +45,17 @@ int main(int argc, char **argv) {
     #pragma omp atomic
     iteration++;
   }
+  printf("%d/%d\n", testing_set->size, testing_set->size);
+
+  double searching_time = timestamp() - start;
 
   delete_classifier(knn);
 
-  printf("%d/%d\n", testing_set->size, testing_set->size);
 
   double accuracy = ((double) correct) / ((double) testing_set->size);
-  printf("Accuracy: %lf\n", accuracy);
+  printf("Accuracy: %lf\n\n", accuracy);
   
+	printf("Building time: %.0lf ms\n", building_time);
+	printf("Searching time: %.0lf ms\n", searching_time);
   return 0;
 }
