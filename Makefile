@@ -6,8 +6,8 @@ TARGET := knn
 SOURCES := $(shell find $(SRCDIR) -type f -name *.c)
 OBJECTS := $(patsubst $(SRCDIR)/%, $(BUILDDIR)/%, $(SOURCES:.c=.o))
 
-CFLAGS := -g -O3 -mavx -Wall -Wextra -fopenmp -Isrc -lm -pthread
-LIB := -g -fopenmp -pthread -lm
+CFLAGS := -g -O3 -mavx -Wall -Wextra -fopenmp -Isrc -lm
+LIB := -g -fopenmp -lm
 
 $(TARGET): $(OBJECTS)
 	$(CC) $^ -o $(TARGET) $(LIB)

@@ -16,7 +16,10 @@ int main(int argc, char **argv) {
   int correct = 0, iteration = 0;
   int k = atoi(argv[3]);
   set_t *training_set, *testing_set;
+  double start, reading_time, building_time, searching_time, accuracy;
 
+  printf("Reading input...\n");
+  start = timestamp();
   if ((training_set = read_input_data(argv[1])) == NULL) {
     printf("ERRO: arquivo %s nao encontrado.\n", argv[1]);
     return 1;
@@ -26,13 +29,20 @@ int main(int argc, char **argv) {
     printf("ERRO: arquivo %s nao encontrado.\n", argv[2]);
     return 1;
   }
+  reading_time = timestamp() - start;
+  printf("Done!\n\n");
+
 
   knn_classifier_t *knn = create_classifier(k);
 
-	double start = timestamp();
+  printf("Building tree...\n");
+	start = timestamp();
   fit(knn, training_set);
-  double building_time = timestamp() - start;
+  building_time = timestamp() - start;
+  printf("Done!\n\n");
 
+
+  printf("Searching tree...\n");
   start = timestamp();
   #pragma omp parallel for reduction (+:correct) shared(knn, testing_set)
   for (int i = 0; i < testing_set->size; ++i) {
@@ -46,16 +56,20 @@ int main(int argc, char **argv) {
     iteration++;
   }
   printf("%d/%d\n", testing_set->size, testing_set->size);
+  printf("Done!\n\n");
 
-  double searching_time = timestamp() - start;
+  searching_time = timestamp() - start;
 
   delete_classifier(knn);
 
 
-  double accuracy = ((double) correct) / ((double) testing_set->size);
-  printf("Accuracy: %lf\n\n", accuracy);
-  
+  accuracy = ((double) correct) / ((double) testing_set->size);
+
+	printf("Reading time: %.0lf ms\n", reading_time);
 	printf("Building time: %.0lf ms\n", building_time);
-	printf("Searching time: %.0lf ms\n", searching_time);
+	printf("Searching time: %.0lf ms\n\n", searching_time);
+
+  printf("Total time: %0.lf ms\n", reading_time + building_time + searching_time);
+  printf("Accuracy: %lf\n\n", accuracy);
   return 0;
 }

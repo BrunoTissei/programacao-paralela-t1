@@ -64,7 +64,7 @@ node_t *build_tree(set_t *points, int k) {
 
     #pragma omp task
     node->left = build_tree(left_part, k);
-    #pragma omp task
+    //#pragma omp task
     node->right = build_tree(right_part, k);
 
     #pragma omp taskwait
