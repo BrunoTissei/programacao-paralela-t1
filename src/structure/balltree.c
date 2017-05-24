@@ -117,7 +117,7 @@ void recursive_search(balltree_t *bt, node_t *node, const point_t *point,
     double dist_left = distance(point, node->left->center);
     double dist_right = distance(point, node->right->center);
 
-    // Condicao par decidir qual subarvore deve ser buscada primeiro
+    // Condicao para decidir qual subarvore deve ser buscada primeiro
     if (dist_left <= dist_right) {
 
       // Busca subarvore da esquerda somente se houver a possibilidade
@@ -224,7 +224,7 @@ double calc_radius(point_t *center, set_t *points, int *index) {
   double dist = distance(center, points->data[0]);
   double radius = dist;
 
-  // Encontra o ponto mais distante de center, a distancia sera usada como
+  // Encontra o ponto mais distante de centro, a distancia sera usada como
   // raio da particao
   for (int i = 1; i < points->size; ++i) {
     dist = distance(center, points->data[i]);

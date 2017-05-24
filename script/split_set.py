@@ -6,8 +6,8 @@ shuff = False
 if len(sys.argv) > 2 and sys.argv[2] == "--random":
     shuff = True
 
-training_file = open("data/training_set", "w")
-testing_file = open("data/testing_set", "w")
+training_file = open("training_set", "w")
+testing_file = open("testing_set", "w")
 
 n, d = map(int, input_file.readline().split())
 

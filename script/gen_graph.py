@@ -1,5 +1,6 @@
 import sys
 import math
+import numpy as np
 import matplotlib.pyplot as plt
 
 input_file = open(sys.argv[1], "r")
@@ -64,12 +65,25 @@ b_lists = [b_ovrhead, b_speedup, b_effec, b_times, b_sigma]
 s_lists = [s_ovrhead, s_speedup, s_effec, s_times, s_sigma]
 t_lists = [t_ovrhead, t_speedup, t_effec, t_times, t_sigma]
 
-for i in xrange(len(graphs)):
-    plt.plot(proc, b_lists[i], label="Build", color='#F92B14', linewidth=2)
-    plt.plot(proc, s_lists[i], label="Search", color='#2C126B', linewidth=2)
-    plt.plot(proc, t_lists[i], label="Total", color='#00933D', linewidth=2)
+weak = True
 
-    plt.xlabel('Threads', fontsize=15)
+for i in xrange(len(graphs)):
+
+    if weak:
+        plt.plot([1, 2, 4], b_lists[i], label="Build", color='#F92B14', linewidth=2)
+        plt.plot([1, 2, 4], s_lists[i], label="Search", color='#2C126B', linewidth=2)
+        plt.plot([1, 2, 4], t_lists[i], label="Total", color='#00933D', linewidth=2)
+
+        plt.xlabel('n', fontsize=15)
+        plt.xticks([1, 2, 4])
+        # plt.xticks(np.arange(min(proc), max(proc)+1, 1.0))
+    else:
+        plt.plot(proc, b_lists[i], label="Build", color='#F92B14', linewidth=2)
+        plt.plot(proc, s_lists[i], label="Search", color='#2C126B', linewidth=2)
+        plt.plot(proc, t_lists[i], label="Total", color='#00933D', linewidth=2)
+
+        plt.xlabel('Threads', fontsize=15)
+
     plt.ylabel(graphs_names[i], fontsize=15)
 
     plt.legend(loc='best')
