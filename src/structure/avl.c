@@ -1,9 +1,11 @@
 #include "structure/avl.h"
 
+// Retorna a altura de um nodo
 static inline int get_height(avl_node_t *node) {
   return (node == NULL) ? 0 : node->height;
 }
 
+// Retorna o balanco de um nodo
 static inline int get_balance(avl_node_t *node) {
   return (node == NULL) ? 0 : get_height(node->left) - get_height(node->right);
 }
@@ -46,6 +48,8 @@ avl_node_t *rotate_left(avl_node_t *node) {
 
 avl_node_t *avl_insert(avl_t *avl, avl_node_t *node, tuple_t key) {
   if (node == NULL) {
+    
+    // Retorna um novo nodo
     avl_node_t *new = (avl_node_t *) malloc(sizeof(avl_node_t));
 
     new->key = key;
@@ -67,6 +71,7 @@ avl_node_t *avl_insert(avl_t *avl, avl_node_t *node, tuple_t key) {
   int balance = get_balance(node);
   node->height = max(get_height(node->left), get_height(node->right)) + 1;
 
+  // Rotaciona arvore para se manter balanceada mesmo apos uma insercao
   if (balance > 1 && key.x < node->left->key.x) {
     return rotate_right(node);
   } else if (balance < -1 && key.x > node->right->key.x) {
@@ -86,6 +91,7 @@ void avl_to_array(avl_node_t *node, int *array, int *k) {
   if (node == NULL)
     return;
 
+  // Preenchimento da array in-order
   avl_to_array(node->left, array, k);
   array[(*k)++] = node->key.y;
   avl_to_array(node->right, array, k);
@@ -95,14 +101,19 @@ avl_node_t *delete(avl_node_t *node) {
   if (node == NULL)
     return NULL;
 
+  // Percorre arvore recursivamente ate o ultimo nodo a direita
+  // (o nodo de maior valor da arvore)
   if (node->right != NULL)
     node->right = delete(node->right);
   else {
     avl_node_t *tmp = node->left;
 
+    // Caso o nodo nao possua nenhum filho
     if (tmp == NULL) {
       tmp = node;
       node = NULL;
+
+    // Caso o nodo possua um filho a esquerda
     } else
       *node = *tmp;
 
@@ -115,6 +126,7 @@ avl_node_t *delete(avl_node_t *node) {
   int balance = get_balance(node);
   node->height = 1 + max(get_height(node->left), get_height(node->right));
 
+  // Rotaciona arvore para se manter balanceada mesmo apos uma remocao
   if (balance > 1 && get_balance(node->left) >= 0) {
     return rotate_right(node);
   } else if (balance > 1 && get_balance(node->left) < 0) {
@@ -134,9 +146,11 @@ void avl_remove_greatest(avl_t *avl) {
   avl->root = delete(avl->root);
 }
 
-tuple_t avl_get_smallest(avl_t *avl) {
+tuple_t avl_get_largest(avl_t *avl) {
   avl_node_t *node = avl->root;
 
+  // Percorre a arvore iterativamente em busca do ultimo nodo a direita
+  // (que possui o maior valor)
   while (node->right != NULL)
     node = node->right;
 

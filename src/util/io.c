@@ -8,6 +8,7 @@ set_t *read_input_data(char *filename) {
   int n, d;
   FILE *f = fopen(filename, "r");
 
+  // Caso o arquivo nao existe o erro deve ser tratado na main
   if (f == NULL)
     return NULL;
 

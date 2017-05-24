@@ -64,7 +64,7 @@ node_t *build_tree(set_t *points, int k) {
 
     #pragma omp task
     node->left = build_tree(left_part, k);
-    //#pragma omp task
+    #pragma omp task
     node->right = build_tree(right_part, k);
 
     #pragma omp taskwait
@@ -98,27 +98,41 @@ void recursive_search(balltree_t *bt, node_t *node, const point_t *point,
       double dist = distance(point, node->points->data[i]);
     
       if (pq->size == 0 || dist < distance(point, bt->dataset->data[top.y])) {
+        
+        // Adiciona distancia e indice do ponto a fila de prioridades
         tuple_t entry = {
           .x = dist,
           .y = node->points->data[i]->id
         };
 
         pq_insert(pq, entry);
+
+        // Remove ultimo elemento da fila de prioridades caso o tamanho tenha
+        // ultrapassado k
         if (pq->size > bt->k)
-          pq_remove_last(pq); 
+          pq_remove_first(pq); 
       }
     }
   } else {
     double dist_left = distance(point, node->left->center);
     double dist_right = distance(point, node->right->center);
 
+    // Condicao par decidir qual subarvore deve ser buscada primeiro
     if (dist_left <= dist_right) {
+
+      // Busca subarvore da esquerda somente se houver a possibilidade
+      // de ter um ponto mais proximo que a maior distancia calculada
+      // na particao da esquerda.
       if (pq->size == 0 || (dist_left <= top.x + node->left->radius))
         recursive_search(bt, node->left, point, pq);
 
+      // A mesma condicao eh verificada para a direita
       if (pq->size == 0 || (dist_right <= top.x + node->right->radius))
         recursive_search(bt, node->right, point, pq);
     } else {
+
+      // O mesmo eh feito na ordem oposta caso a distancia do ponto ate
+      // o centro da direita seja menor que ao da esquerda
       if (pq->size == 0 || (dist_right <= top.x + node->right->radius))
         recursive_search(bt, node->right, point, pq);
 
@@ -133,9 +147,14 @@ void partition(set_t *points, set_t **left, set_t **right, int left_ind) {
   double dist, grt_dist = -1.0;
   double left_dist, right_dist;
 
+  //Ponto que sera usado para obter a particao da direita
   point_t *rm_point;
+  
+  //Ponto que sera usado para obter a particao da esquerda
   point_t *lm_point = points->data[left_ind];
 
+  // Encontra o ponto mais distante do ponto da esquerda para ser o ponto
+  // da direita
   for (int i = 0; i < points->size; ++i) {
     if (i != left_ind) {
       dist = distance(lm_point, points->data[i]);
@@ -157,6 +176,8 @@ void partition(set_t *points, set_t **left, set_t **right, int left_ind) {
   left_idxs[li++] = left_ind;
   right_idxs[ri++] = right_ind;
 
+  // Conjunto de indices dos pontos que serao usados na particao da esquerda
+  // e os que serao usados na particao da direita
   for (int i = 0; i < points->size; ++i) {
     if (i != left_ind && i != right_ind) {
       left_dist = distance(lm_point, points->data[i]);
@@ -186,6 +207,7 @@ void calc_center(set_t *points, point_t **center) {
   int n_dim = points->data[0]->size;
   *center = create_point(n_dim, -1);
 
+  // Calcula media de todos os pontos
   for (int i = 0; i < points->size; ++i)
     for (int j = 0; j < n_dim; ++j)
       (*center)->value[j] += points->data[i]->value[j];
@@ -202,6 +224,8 @@ double calc_radius(point_t *center, set_t *points, int *index) {
   double dist = distance(center, points->data[0]);
   double radius = dist;
 
+  // Encontra o ponto mais distante de center, a distancia sera usada como
+  // raio da particao
   for (int i = 1; i < points->size; ++i) {
     dist = distance(center, points->data[i]);
 

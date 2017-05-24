@@ -5,6 +5,8 @@ point_t *create_point(uint size, int id) {
 
   p->id = id;
   p->size = size;
+
+  // Aloca memoria para valores de cada dimensao do ponto
   p->value = (double *) calloc(1, size * sizeof(double));
 
   return p;
@@ -14,6 +16,8 @@ set_t *create_set(uint size) {
   set_t *s = (set_t *) calloc(1, sizeof(set_t));
 
   s->size = size;
+
+  // Aloca memoria para os pontos que pertencem ao set
   s->data = (point_t **) calloc(1, size * sizeof(point_t *));
 
   return s;
@@ -25,6 +29,7 @@ inline double distance(const point_t *a, const point_t *b) {
 
   double dist = 0.0;
 
+  // Calcula distancia usando soma dos quadrados das diferencas
   __m256d ma, mb, msub, mans;
 
   for (i = 0; i < n; i += 4) {

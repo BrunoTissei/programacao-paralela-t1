@@ -25,23 +25,32 @@ typedef struct balltree_t {
 } balltree_t;
 
 
+// Cria uma ball tree com todos os elementos do dataset
 balltree_t *create_balltree(set_t *dataset, int k);
 
+// Preenche vetor result com os pontos mais proximos de point
 int search(balltree_t *bt, const point_t *point, int *result);
 
+// Remove todos os nodos da memoria
 void delete_nodes(node_t *n);
 
+// Remove ball tree da memoria
 void delete_balltree(balltree_t *balltree);
 
+// Constroi ball tree recursivamente
 node_t *build_tree(set_t *points, int k);
 
+// Busca na ball tree recursivamente preenchendo pq com os resultados
 void recursive_search(balltree_t *bt, node_t *node, const point_t *point, 
     priority_queue_t *pq);
 
+// Particiona conjunto de pontos em dois subconjuntos
 void partition(set_t *points, set_t **left, set_t **right, int left_ind);
 
+// Calcula centro aproximado de um conjunto de pontos
 void calc_center(set_t *points, point_t **center);
 
+// Calcula raio de um conjunto de pontos (maior distancia ate o centro)
 double calc_radius(point_t *center, set_t *points, int *index);
 
 #endif

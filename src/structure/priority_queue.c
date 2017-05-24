@@ -15,6 +15,8 @@ void pq_insert(priority_queue_t *pq, tuple_t key) {
 }
 
 tuple_t pq_first(priority_queue_t *pq) {
+
+  // Caso a fila esteja vazia, retorna um elemento zero
   if (pq->size == 0) {
     return (tuple_t) {
       .x = 0,
@@ -22,10 +24,10 @@ tuple_t pq_first(priority_queue_t *pq) {
     };
   }
 
-  return avl_get_smallest(&(pq->tree));
+  return avl_get_largest(&(pq->tree));
 }
 
-void pq_remove_last(priority_queue_t *pq) {
+void pq_remove_first(priority_queue_t *pq) {
   avl_remove_greatest(&(pq->tree));
   pq->size--;
 }

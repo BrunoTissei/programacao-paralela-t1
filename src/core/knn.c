@@ -26,9 +26,11 @@ int predict(knn_classifier_t *knn_clf, const point_t *point) {
 
   int found = search(knn_clf->balltree, point, result);
 
+  // Preenche vetor de frequencias com as classes do vetor de resultados
   for (int i = 0; i < found; ++i)
     count[result[i]]++; 
 
+  // Encontra classe com maior frequencia que sera a resposta da classificacao
   for (int i = 0; i < 10; ++i) {
     if (count[i] > mx) {
       mx = count[i];
